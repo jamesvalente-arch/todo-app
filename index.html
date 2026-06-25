@@ -3,28 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple To-Do List</title>
+    <title>Organized To-Do List</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>My To-Do List</h1>
+        <h1>📋 My Tasks</h1>
+        <p class="subtitle">Organize your tasks by time frame</p>
         
-        <div class="input-section">
+        <!-- Add Task Section -->
+        <div class="add-task-section">
             <input 
                 type="text" 
                 id="taskInput" 
                 placeholder="Add a new task..."
                 autocomplete="off"
             >
-            <button id="addBtn">Add Task</button>
+            <select id="categorySelect" class="category-select">
+                <option value="short">Short Term</option>
+                <option value="medium">Medium Term</option>
+                <option value="long">Long Term</option>
+            </select>
+            <button id="addBtn" class="btn-add">Add Task</button>
         </div>
 
-        <ul id="taskList" class="task-list">
-            <!-- Tasks will appear here -->
-        </ul>
+        <!-- Short Term Tasks -->
+        <div class="folder">
+            <div class="folder-header" data-category="short">
+                <span class="folder-icon">📌</span>
+                <h2>Short Term</h2>
+                <span class="task-count" id="shortCount">(0)</span>
+            </div>
+            <ul id="shortList" class="task-list">
+                <p class="empty-message">No short term tasks yet</p>
+            </ul>
+        </div>
 
-        <p id="emptyMessage" class="empty-message">No tasks yet. Add one to get started!</p>
+        <!-- Medium Term Tasks -->
+        <div class="folder">
+            <div class="folder-header" data-category="medium">
+                <span class="folder-icon">⏱️</span>
+                <h2>Medium Term</h2>
+                <span class="task-count" id="mediumCount">(0)</span>
+            </div>
+            <ul id="mediumList" class="task-list">
+                <p class="empty-message">No medium term tasks yet</p>
+            </ul>
+        </div>
+
+        <!-- Long Term Tasks -->
+        <div class="folder">
+            <div class="folder-header" data-category="long">
+                <span class="folder-icon">🎯</span>
+                <h2>Long Term</h2>
+                <span class="task-count" id="longCount">(0)</span>
+            </div>
+            <ul id="longList" class="task-list">
+                <p class="empty-message">No long term tasks yet</p>
+            </ul>
+        </div>
+
+        <!-- Completed Folder (Collapsible) -->
+        <div class="folder completed-folder">
+            <div class="folder-header folder-header-collapsed" id="completedHeader">
+                <span class="folder-icon">✅</span>
+                <h2>Completed</h2>
+                <span class="task-count" id="completedCount">(0)</span>
+                <span class="toggle-arrow">▶</span>
+            </div>
+            <ul id="completedList" class="task-list hidden">
+                <p class="empty-message">No completed tasks yet</p>
+            </ul>
+        </div>
     </div>
 
     <script src="script.js"></script>
