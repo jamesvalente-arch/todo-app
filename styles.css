@@ -10,8 +10,9 @@ body {
     min-height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     padding: 20px;
+    padding-top: 40px;
 }
 
 .container {
@@ -20,24 +21,34 @@ body {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     padding: 30px;
     width: 100%;
-    max-width: 500px;
+    max-width: 600px;
 }
 
 h1 {
     color: #333;
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 10px;
     font-size: 28px;
 }
 
-.input-section {
+.subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 25px;
+    font-size: 14px;
+}
+
+/* Add Task Section */
+.add-task-section {
     display: flex;
     gap: 10px;
-    margin-bottom: 25px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
 }
 
 #taskInput {
     flex: 1;
+    min-width: 150px;
     padding: 12px 15px;
     border: 2px solid #e0e0e0;
     border-radius: 5px;
@@ -50,8 +61,22 @@ h1 {
     border-color: #667eea;
 }
 
-#addBtn {
-    padding: 12px 25px;
+.category-select {
+    padding: 12px 10px;
+    border: 2px solid #e0e0e0;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: border-color 0.3s;
+}
+
+.category-select:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.btn-add {
+    padding: 12px 20px;
     background: #667eea;
     color: white;
     border: none;
@@ -62,32 +87,92 @@ h1 {
     transition: background 0.3s;
 }
 
-#addBtn:hover {
+.btn-add:hover {
     background: #5568d3;
 }
 
-#addBtn:active {
+.btn-add:active {
     transform: scale(0.98);
 }
 
+/* Folder Structure */
+.folder {
+    margin-bottom: 25px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.folder-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px;
+    background: #f9f9f9;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.3s;
+}
+
+.folder-header:hover {
+    background: #f0f0f0;
+}
+
+.folder-header-collapsed {
+    cursor: pointer;
+}
+
+.folder-icon {
+    font-size: 20px;
+}
+
+.folder-header h2 {
+    flex: 1;
+    font-size: 18px;
+    color: #333;
+    margin: 0;
+}
+
+.task-count {
+    color: #999;
+    font-size: 14px;
+}
+
+.toggle-arrow {
+    font-size: 12px;
+    color: #667eea;
+    transition: transform 0.3s;
+}
+
+.toggle-arrow.open {
+    transform: rotate(90deg);
+}
+
+/* Task List */
 .task-list {
     list-style: none;
-    margin-bottom: 20px;
+    padding: 0;
+}
+
+.task-list.hidden {
+    display: none;
 }
 
 .task-item {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 15px;
-    background: #f9f9f9;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    transition: background 0.3s;
+    padding: 12px 15px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.2s;
+}
+
+.task-item:last-child {
+    border-bottom: none;
 }
 
 .task-item:hover {
-    background: #f0f0f0;
+    background: #f9f9f9;
 }
 
 .task-item input[type="checkbox"] {
@@ -95,6 +180,7 @@ h1 {
     height: 20px;
     cursor: pointer;
     accent-color: #667eea;
+    flex-shrink: 0;
 }
 
 .task-item.completed .task-text {
@@ -118,19 +204,73 @@ h1 {
     cursor: pointer;
     font-size: 14px;
     transition: background 0.3s;
+    flex-shrink: 0;
 }
 
 .delete-btn:hover {
     background: #ff5252;
 }
 
-.empty-message {
-    text-align: center;
-    color: #999;
-    font-size: 16px;
-    padding: 20px;
+.delete-btn:active {
+    transform: scale(0.95);
 }
 
-.empty-message.hidden {
-    display: none;
+.empty-message {
+    text-align: center;
+    color: #ccc;
+    font-size: 14px;
+    padding: 20px;
+    margin: 0;
+}
+
+.completed-folder {
+    border-color: #d4edda;
+    background: #f8fff9;
+}
+
+.completed-folder .folder-header {
+    background: #e8f5e9;
+}
+
+.completed-folder .folder-header:hover {
+    background: #dceee9;
+}
+
+/* Mobile Responsive */
+@media (max-width: 600px) {
+    .container {
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    .add-task-section {
+        flex-direction: column;
+    }
+
+    #taskInput,
+    .category-select,
+    .btn-add {
+        width: 100%;
+    }
+
+    .folder-header {
+        flex-wrap: wrap;
+    }
+
+    .folder-header h2 {
+        font-size: 16px;
+    }
+
+    .task-item {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .delete-btn {
+        padding: 4px 10px;
+        font-size: 12px;
+    }
 }
