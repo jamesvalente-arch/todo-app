@@ -1,8 +1,9 @@
 // Get HTML elements
 const taskInput = document.getElementById('taskInput');
+const categorySelect = document.getElementById('categorySelect');
 const addBtn = document.getElementById('addBtn');
-const taskList = document.getElementById('taskList');
-const emptyMessage = document.getElementById('emptyMessage');
+const completedHeader = document.getElementById('completedHeader');
+const completedList = document.getElementById('completedList');
 
 // Load tasks from browser storage when page opens
 loadTasks();
@@ -17,8 +18,12 @@ taskInput.addEventListener('keypress', (e) => {
     }
 });
 
+// Toggle completed folder visibility
+completedHeader.addEventListener('click', toggleCompletedFolder);
+
 function addTask() {
     const taskText = taskInput.value.trim();
+    const category = categorySelect.value;
 
     // Don't add empty tasks
     if (taskText === '') {
@@ -30,6 +35,7 @@ function addTask() {
     const task = {
         id: Date.now(),
         text: taskText,
+        category: category,
         completed: false
     };
 
@@ -45,10 +51,27 @@ function addTask() {
 }
 
 function renderTask(task) {
+    // Determine which list to add the task to
+    let listId;
+    if (task.completed) {
+        listId = 'completedList';
+    } else {
+        listId = task.category + 'List';
+    }
+
+    const taskList = document.getElementById(listId);
+
+    // Remove empty message if present
+    const emptyMessage = taskList.querySelector('.empty-message');
+    if (emptyMessage) {
+        emptyMessage.remove();
+    }
+
     // Create task item HTML
     const li = document.createElement('li');
     li.className = `task-item ${task.completed ? 'completed' : ''}`;
     li.dataset.id = task.id;
+    li.dataset.category = task.category;
 
     li.innerHTML = `
         <input 
@@ -63,8 +86,12 @@ function renderTask(task) {
     // Handle checkbox (mark as complete/incomplete)
     const checkbox = li.querySelector('.task-checkbox');
     checkbox.addEventListener('change', (e) => {
-        li.classList.toggle('completed');
+        task.completed = e.target.checked;
         saveTasks();
+        // Move task to correct list
+        li.remove();
+        renderTask(task);
+        updateTaskCounts();
     });
 
     // Handle delete button
@@ -72,24 +99,28 @@ function renderTask(task) {
     deleteBtn.addEventListener('click', () => {
         li.remove();
         saveTasks();
+        updateTaskCounts();
+        checkEmptyLists();
     });
 
-    // Add task to the list
+    // Add task to the appropriate list
     taskList.appendChild(li);
-    updateEmptyMessage();
+    updateTaskCounts();
 }
 
 function saveTasks() {
     const tasks = [];
-    
-    // Get all task items from the page
+
+    // Get all tasks from all lists
     document.querySelectorAll('.task-item').forEach((item) => {
         const checkbox = item.querySelector('.task-checkbox');
         const taskText = item.querySelector('.task-text');
-        
+        const category = item.dataset.category;
+
         tasks.push({
             id: item.dataset.id,
             text: taskText.textContent,
+            category: category,
             completed: checkbox.checked
         });
     });
@@ -101,26 +132,66 @@ function saveTasks() {
 function loadTasks() {
     // Get tasks from browser storage
     const saved = localStorage.getItem('tasks');
-    
+
     if (saved) {
         const tasks = JSON.parse(saved);
-        
+
         // Display each saved task
         tasks.forEach((task) => {
             renderTask(task);
         });
     }
 
-    updateEmptyMessage();
+    updateTaskCounts();
+    checkEmptyLists();
 }
 
-function updateEmptyMessage() {
-    // Show/hide the "no tasks" message
-    if (taskList.children.length === 0) {
-        emptyMessage.classList.remove('hidden');
-    } else {
-        emptyMessage.classList.add('hidden');
-    }
+function updateTaskCounts() {
+    // Count tasks in each category
+    const shortCount = document.querySelectorAll('#shortList .task-item').length;
+    const mediumCount = document.querySelectorAll('#mediumList .task-item').length;
+    const longCount = document.querySelectorAll('#longList .task-item').length;
+    const completedCount = document.querySelectorAll('#completedList .task-item').length;
+
+    document.getElementById('shortCount').textContent = `(${shortCount})`;
+    document.getElementById('mediumCount').textContent = `(${mediumCount})`;
+    document.getElementById('longCount').textContent = `(${longCount})`;
+    document.getElementById('completedCount').textContent = `(${completedCount})`;
+}
+
+function checkEmptyLists() {
+    // Check each list and show empty message if needed
+    const lists = ['shortList', 'mediumList', 'longList', 'completedList'];
+
+    lists.forEach((listId) => {
+        const list = document.getElementById(listId);
+        const hasItems = list.querySelectorAll('.task-item').length > 0;
+
+        // Remove existing empty message
+        const existingMessage = list.querySelector('.empty-message');
+        if (existingMessage) {
+            existingMessage.remove();
+        }
+
+        // Add empty message if no items
+        if (!hasItems) {
+            const emptyMsg = document.createElement('p');
+            emptyMsg.className = 'empty-message';
+
+            if (listId === 'shortList') emptyMsg.textContent = 'No short term tasks yet';
+            if (listId === 'mediumList') emptyMsg.textContent = 'No medium term tasks yet';
+            if (listId === 'longList') emptyMsg.textContent = 'No long term tasks yet';
+            if (listId === 'completedList') emptyMsg.textContent = 'No completed tasks yet';
+
+            list.appendChild(emptyMsg);
+        }
+    });
+}
+
+function toggleCompletedFolder() {
+    const arrow = completedHeader.querySelector('.toggle-arrow');
+    completedList.classList.toggle('hidden');
+    arrow.classList.toggle('open');
 }
 
 function escapeHtml(text) {
